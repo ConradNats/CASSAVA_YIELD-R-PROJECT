@@ -1,0 +1,383 @@
+---
+title: "Cassava Yield Data Analysis"
+author: "Conrad Natuyamba"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+# 1. Introduction
+
+This report analyses the supplied Cassava Yield Data using R. The objectives are to explore the dataset, identify missing values and outliers, investigate relationships between variables, and test whether fertilizer and tillage are associated with projected cassava yield.
+
+```{r setup, message=FALSE, warning=FALSE}
+packages <- c("readxl", "dplyr", "ggplot2", "tidyr")
+installed <- rownames(installed.packages())
+
+for (p in packages) {
+  if (!(p %in% installed)) install.packages(p)
+}
+
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+df <- read_excel("../data/raw/Cassava_Yield_Data.xlsx",
+                 sheet = "Cassava Data")
+names(df) <- trimws(names(df))
+```
+
+# 2. Understanding the dataset
+
+The dataset contains `r nrow(df)` observations and `r ncol(df)` variables.
+
+```{r structure}
+dim(df)
+names(df)
+str(df)
+```
+
+The fertilizer codes are:
+
+- F2150 = NPK 15:15:15
+- F1100 = NPK 17:17:17
+- F3200 = NPK 20:10:10
+- F5300 = Nitrogen
+- F4250 = Phosphorus
+
+Tillage is recorded as conventional (`conv`) or minimum (`minimum`).
+
+# 3. Question 1 — distributions, missing values and outliers
+
+## 3.1 Variable distributions
+
+```{r summary}
+summary(df)
+```
+
+The numeric variables can be visualised with histograms and boxplots.
+
+```{r histograms, fig.height=6, fig.width=9}
+numeric_vars <- names(df)[sapply(df, is.numeric)]
+
+for (v in numeric_vars) {
+  print(
+    ggplot(df, aes(x = .data[[v]])) +
+      geom_histogram(bins = 20) +
+      labs(title = paste("Distribution of", v),
+           x = v, y = "Frequency") +
+      theme_minimal()
+  )
+}
+```
+
+## 3.2 Missing information
+
+```{r missing}
+missing_by_variable <- colSums(is.na(df))
+missing_by_variable
+sum(is.na(df))
+```
+
+**Finding:** The supplied dataset contains **no missing values**. Therefore, no observations needed to be removed or imputed for missingness.
+
+A general missing-value strategy for future datasets would be:
+
+- numeric variables → median imputation when appropriate;
+- categorical variables → mode or an explicit `"Unknown"` category;
+- remove rows only when the missingness makes the observation unusable.
+
+## 3.3 Outliers
+
+The IQR rule defines:
+
+- lower fence = Q1 − 1.5 × IQR
+- upper fence = Q3 + 1.5 × IQR
+
+```{r outliers}
+outlier_report <- data.frame(
+  variable = character(),
+  Q1 = numeric(),
+  Q3 = numeric(),
+  IQR = numeric(),
+  lower_fence = numeric(),
+  upper_fence = numeric(),
+  outlier_count = integer()
+)
+
+for (v in numeric_vars) {
+  x <- df[[v]]
+  q1 <- quantile(x, 0.25)
+  q3 <- quantile(x, 0.75)
+  iqr_value <- q3 - q1
+  lower <- q1 - 1.5 * iqr_value
+  upper <- q3 + 1.5 * iqr_value
+  n_out <- sum(x < lower | x > upper)
+
+  outlier_report <- rbind(
+    outlier_report,
+    data.frame(
+      variable = v,
+      Q1 = q1,
+      Q3 = q3,
+      IQR = iqr_value,
+      lower_fence = lower,
+      upper_fence = upper,
+      outlier_count = n_out
+    )
+  )
+}
+
+outlier_report
+```
+
+The supplied data contain IQR outliers in several variables. For example, `No_bigtubers`, `Weigh_bigtubers`, `No_mediumtubers`, `Weight_mediumtubers`, and `TotalWeightperhectare` have observations outside their IQR fences.
+
+## 3.4 Transformation used
+
+Instead of deleting potentially useful observations, this project uses **winsorization/capping** for selected measurement variables. Values below the lower IQR fence are replaced with the lower fence, while values above the upper fence are replaced with the upper fence.
+
+```{r clean}
+df_clean <- df
+
+for (v in numeric_vars) {
+  med <- median(df_clean[[v]], na.rm = TRUE)
+  df_clean[[v]][is.na(df_clean[[v]])] <- med
+}
+
+vars_to_cap <- c(
+  "Plants_harvested", "No_bigtubers", "Weigh_bigtubers",
+  "No_mediumtubers", "Weight_mediumtubers", "No_smalltubers",
+  "Weight_smalltubers", "Totaltuberno", "AV_tubers_Plant",
+  "Total_tubweight", "plotsize", "TotalWeightperhectare",
+  "TotalTuberperHectare"
+)
+
+for (v in vars_to_cap) {
+  q1 <- quantile(df_clean[[v]], 0.25)
+  q3 <- quantile(df_clean[[v]], 0.75)
+  iqr_value <- q3 - q1
+  lower <- q1 - 1.5 * iqr_value
+  upper <- q3 + 1.5 * iqr_value
+
+  df_clean[[v]] <- pmax(df_clean[[v]], lower)
+  df_clean[[v]] <- pmin(df_clean[[v]], upper)
+}
+
+sum(is.na(df_clean))
+```
+
+# 4. Question 2 — relationships
+
+## 4.1 Two continuous variables
+
+We investigate `TotalTuberperHectare` and `TotalWeightperhectare`.
+
+```{r continuous_plot, fig.height=6, fig.width=8}
+ggplot(df_clean,
+       aes(x = TotalTuberperHectare,
+           y = TotalWeightperhectare)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Total Tuber per Hectare vs Total Weight per Hectare",
+    x = "Total Tuber per Hectare",
+    y = "Total Weight per Hectare"
+  ) +
+  theme_minimal()
+```
+
+```{r correlation}
+cor_test <- cor.test(
+  df_clean$TotalTuberperHectare,
+  df_clean$TotalWeightperhectare,
+  method = "pearson"
+)
+
+cor_test
+```
+
+**Interpretation:** The relationship is positive. In the supplied data, the Pearson correlation is approximately **r = 0.584 after winsorization**, with **p < 0.001**. This indicates that observations with more tubers per hectare tend to also have greater total tuber weight per hectare.
+
+Correlation does not by itself establish causation.
+
+## 4.2 One continuous and one categorical variable
+
+We compare `TotalWeightperhectare` across the two tillage methods.
+
+```{r tillage_weight_plot, fig.height=6, fig.width=7}
+ggplot(df_clean,
+       aes(x = tillage,
+           y = TotalWeightperhectare)) +
+  geom_boxplot() +
+  labs(
+    title = "Total Weight per Hectare by Tillage Method",
+    x = "Tillage Method",
+    y = "Total Weight per Hectare"
+  ) +
+  theme_minimal()
+```
+
+```{r tillage_weight_test}
+t.test(
+  TotalWeightperhectare ~ tillage,
+  data = df_clean
+)
+```
+
+A Welch two-sample t-test is appropriate for comparing a continuous outcome across two groups.
+
+## 4.3 Two categorical variables
+
+We investigate the relationship between tillage and fertilizer.
+
+```{r categorical_table}
+table(df_clean$tillage, df_clean$ferT)
+```
+
+```{r categorical_plot, fig.height=6, fig.width=8}
+ggplot(df_clean, aes(x = ferT, fill = tillage)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Tillage Method by Fertilizer Application",
+    x = "Fertilizer",
+    y = "Count",
+    fill = "Tillage"
+  ) +
+  theme_minimal()
+```
+
+```{r chi_square}
+chisq.test(table(df_clean$tillage, df_clean$ferT))
+```
+
+**Finding:** The design is perfectly balanced: each tillage group has the same number of observations for every fertilizer code. The chi-square test therefore gives **p = 1**, providing no evidence of an association between tillage and fertilizer in this dataset.
+
+# 5. Question 3a — fertilizer and projected yield
+
+Because fertilizer has five categories, one-way ANOVA is used.
+
+## 5.1 Total weight per hectare
+
+```{r fertilizer_weight_plot, fig.height=6, fig.width=8}
+ggplot(df_clean,
+       aes(x = ferT,
+           y = TotalWeightperhectare)) +
+  geom_boxplot() +
+  labs(
+    title = "Total Weight per Hectare by Fertilizer",
+    x = "Fertilizer",
+    y = "Total Weight per Hectare"
+  ) +
+  theme_minimal()
+```
+
+```{r fertilizer_weight_anova}
+anova_weight <- aov(
+  TotalWeightperhectare ~ ferT,
+  data = df_clean
+)
+
+summary(anova_weight)
+```
+
+**Interpretation:** After the outlier-capping transformation, the ANOVA p-value is approximately **0.070**. At the conventional 5% significance level, this does not provide sufficient statistical evidence of an overall fertilizer effect on projected total weight per hectare.
+
+The group means can still be useful descriptively:
+
+```{r fertilizer_summary}
+df_clean %>%
+  group_by(ferT) %>%
+  summarise(
+    n = n(),
+    mean_weight = mean(TotalWeightperhectare),
+    sd_weight = sd(TotalWeightperhectare),
+    mean_tuber = mean(TotalTuberperHectare),
+    sd_tuber = sd(TotalTuberperHectare)
+  )
+```
+
+## 5.2 Total tuber per hectare
+
+```{r fertilizer_tuber_plot, fig.height=6, fig.width=8}
+ggplot(df_clean,
+       aes(x = ferT,
+           y = TotalTuberperHectare)) +
+  geom_boxplot() +
+  labs(
+    title = "Total Tuber per Hectare by Fertilizer",
+    x = "Fertilizer",
+    y = "Total Tuber per Hectare"
+  ) +
+  theme_minimal()
+```
+
+```{r fertilizer_tuber_anova}
+anova_tuber <- aov(
+  TotalTuberperHectare ~ ferT,
+  data = df_clean
+)
+
+summary(anova_tuber)
+```
+
+**Interpretation:** The ANOVA p-value is approximately **0.805**, so there is no statistically significant overall fertilizer effect on projected total tuber number per hectare at α = 0.05.
+
+# 6. Question 3b — tillage and projected yield
+
+There are two tillage groups, so Welch two-sample t-tests are used.
+
+## 6.1 Total weight per hectare
+
+```{r tillage_weight_final}
+t.test(
+  TotalWeightperhectare ~ tillage,
+  data = df_clean
+)
+```
+
+The group means are approximately:
+
+- Conventional: **13,411** weight units per hectare
+- Minimum: **12,749** weight units per hectare
+
+The Welch test has p ≈ **0.616**, so the difference is not statistically significant at α = 0.05.
+
+## 6.2 Total tuber per hectare
+
+```{r tillage_tuber_final}
+t.test(
+  TotalTuberperHectare ~ tillage,
+  data = df_clean
+)
+```
+
+The Welch test has p ≈ **0.168**, so the difference in projected total tuber number per hectare is not statistically significant at α = 0.05.
+
+# 7. Overall findings
+
+| Question | Statistical method | Result |
+|---|---|---|
+| Two continuous variables | Pearson correlation | Positive relationship; p < 0.001 |
+| Continuous + tillage | Welch t-test | No statistically significant difference for weight |
+| Two categorical variables | Chi-square test | p = 1; perfectly balanced design |
+| Fertilizer → total weight | One-way ANOVA | p ≈ 0.070 after winsorization |
+| Fertilizer → total tuber | One-way ANOVA | p ≈ 0.805 |
+| Tillage → total weight | Welch t-test | p ≈ 0.616 |
+| Tillage → total tuber | Welch t-test | p ≈ 0.168 |
+
+These conclusions apply to the supplied 115-observation dataset. They should not automatically be generalized to all cassava farms.
+
+# 8. Conclusion
+
+The analysis demonstrates a complete R workflow: importing Excel data, inspecting structure, checking missing values, detecting and treating outliers, visualising distributions and relationships, and performing statistical tests.
+
+The dataset has no missing values. Several measurement variables contain IQR-defined outliers, so a winsorization/capping approach was used for the cleaned analysis.
+
+The two yield variables show a positive association. The fertilizer and tillage comparisons do not provide statistically significant evidence at the 5% level for the projected outcomes tested here.
+
+For a stronger agricultural study, a future analysis could account for experimental design factors such as season, location, block, and replication using a more appropriate factorial or mixed-effects model rather than treating every observation as independent.

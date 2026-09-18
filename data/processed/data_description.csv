@@ -1,0 +1,22 @@
+The datasheet shows the performance of cassava in different seasons under different tillage methods and fertilizer applications,
+Key,
+Sesn,Season 
+locn,"Location (1 = Soroti, 2 = Mukono)"
+block,Planting block
+rep,Planting replication
+tillage ,"Type of tillage (conv =  conventional tillage e.g. ploughing, harrowing and ridging, minimum = digger-made holes) "
+ferT,"Fertilizer application codes. Compound fertilizers  (F2150 =  NPK 15:15:15, F1100 = NPK 17:17:17, F3200 = NPK 20:10:10) and Single-nutrient fertilizers (F5300 = Nitrogen, F4250 =Phosphorus)"
+Plants_harvested,Number of cassava plants harvested
+No_bigtubers,Number of big tubers harvested
+Weigh_bigtubers,Weight of big tubers harvested
+No_mediumtubers,Number of medium tubers harvested
+Weight_mediumtubers,Weight of medium tubers harvested
+No_smalltubers,Number of small tubers harvested
+Weight_smalltubers,Weight of small tubers harvested
+Totaltuberno,"Total number of big, medium and small tubers harvested"
+AV_tubers_Plant,Average number of tubers per cassava plant harvested
+Total_tubweight,Total tube weight
+plotsize,Plot size
+HEC,Hectares
+TotalWeightperhectare,Projected yield of total weight of tubers per hectare
+TotalTuberperHectare,Projected yield of total number of tubers per hectare

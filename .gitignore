@@ -1,0 +1,17 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated HTML/cache
+*_cache/
+*.html
+
+# Temporary files
+*.tmp
+*.log
