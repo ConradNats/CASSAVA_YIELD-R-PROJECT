@@ -1,0 +1,99 @@
+---
+title: "cassava.ug"
+author: "sedrack"
+date: "2026-09-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("readxl")
+install.packages("dplyr")
+install.packages("ggplot2")
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+getwd()
+```
+
+```{r}
+cassava <- read_excel("Cassava_Yield_Data.xlsx") 
+head(cassava)
+```
+```{r}
+```
+
+
+```{r}
+str(cassava)
+```
+
+```{r}
+sapply(cassava, class)
+```
+```{r}
+is.na(cassava)
+```
+```{r}
+# Look at the data
+head(df)
+str(df)
+dim(df)
+names(df)
+```
+
+```{r}
+# Frequency tables for categorical variables
+table(df$tillage)
+table(df$ferT)
+table(df$Sesn)
+table(df$locn)
+```
+```{r}
+# -----------------------------
+# 3. MISSING VALUES
+# -----------------------------
+
+missing_by_variable <- colSums(is.na(df))
+print(missing_by_variable)
+
+total_missing <- sum(is.na(df))
+print(total_missing)
+```
+```{r}
+# Visual missing-value map
+missing_long <- cassava %>%
+  mutate(row_id = row_number()) %>%
+  pivot_longer(
+    cols = -row_id,
+    names_to = "variable",
+    values_to = "value"
+  ) %>%
+  mutate(is_missing = is.na(value))
+
+p_missing <- ggplot(missing_long,
+                    aes(x = variable, y = row_id, fill = is_missing)) +
+  geom_tile() +
+  labs(
+    title = "Missing-Value Map",
+    x = "Variable",
+    y = "Observation",
+    fill = "Missing?"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+print(p_missing)
+ggsave("figures/01_missing_value_map.png",
+       p_missing, width = 12, height = 7, dpi = 300)
+```
+

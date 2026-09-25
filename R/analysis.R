@@ -12,7 +12,7 @@ installed <- rownames(installed.packages())
 
 for (p in packages) {
   if (!(p %in% installed)) {
-    install.packages(p)
+    install.packages(p) 
   }
 }
 

@@ -1,0 +1,988 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Cassava Yield Data Analysis},
+  pdfauthor={GROUP 2},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Cassava Yield Data Analysis}
+\author{GROUP 2}
+\date{23 September 2026}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{1. Introduction}\label{introduction}
+
+This report analyses the supplied Cassava Yield Data using R. The
+objectives are to explore the dataset, identify missing values and
+outliers, investigate relationships between variables, and test whether
+fertilizer and tillage are associated with projected cassava yield.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}\AttributeTok{root.dir =} \StringTok{"C:/Users/HP/OneDrive/Desktop/cassava{-}yield{-}r{-}project\_1/data/raw"}\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}\AttributeTok{echo =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{message =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{warning =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Libraries used in this
+analysis}\label{libraries-used-in-this-analysis}
+
+\textbf{1. readxl}
+
+The \texttt{readxl} library is used to import data from Excel files
+(\texttt{.xlsx} and \texttt{.xls}) into R.
+
+We are using it to read the Cassava Yield Data Excel workbook so that we
+can explore and analyze the dataset.
+
+\textbf{2. dplyr}
+
+The \texttt{dplyr} library is used for data manipulation and cleaning.
+It provides functions for selecting columns, filtering rows, creating
+new variables, and transforming data.
+
+We are using it to clean the cassava dataset, convert variable types,
+and prepare the data for analysis.
+
+\textbf{3. tidyr}
+
+The \texttt{tidyr} library is used to organize and reshape data into a
+tidy format, where each variable has its own column and each observation
+has its own row.
+
+We are using it to reshape numeric and categorical variables into a
+suitable format for creating distribution graphs.
+
+\textbf{4. ggplot2}
+
+The \texttt{ggplot2} library is used to create statistical graphs and
+visualizations.
+
+We are using it to display variable distributions, boxplots,
+scatterplots, and bar charts. These visualizations help us identify
+patterns, relationships, and potential outliers in the data.
+
+\textbf{6. knitr}
+
+The \texttt{knitr} library is used to generate well-formatted reports
+from R Markdown documents.
+
+We are using it to display tables, including variable summaries,
+missing-value information, and outlier detection results, in the knitted
+HTML report.
+
+\subsubsection{Summary}\label{summary}
+
+Together, these libraries support the complete data analysis process:
+importing the dataset, cleaning and transforming the data, exploring
+distributions, visualizing relationships, and presenting statistical
+findings in an organized HTML report.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{packages }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"readxl"}\NormalTok{, }\StringTok{"dplyr"}\NormalTok{, }\StringTok{"ggplot2"}\NormalTok{, }\StringTok{"tidyr"}\NormalTok{, }\StringTok{"knitr"}\NormalTok{)}
+\NormalTok{installed }\OtherTok{\textless{}{-}} \FunctionTok{rownames}\NormalTok{(}\FunctionTok{installed.packages}\NormalTok{())}
+
+\ControlFlowTok{for}\NormalTok{ (p }\ControlFlowTok{in}\NormalTok{ packages) \{}
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\NormalTok{(p }\SpecialCharTok{\%in\%}\NormalTok{ installed)) }\FunctionTok{install.packages}\NormalTok{(p)}
+\NormalTok{\}}
+
+\FunctionTok{library}\NormalTok{(readxl)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(tidyr)}
+\FunctionTok{library}\NormalTok{(knitr)}
+
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{read\_excel}\NormalTok{(}\StringTok{"../data/raw/Cassava\_Yield\_Data.xlsx"}\NormalTok{,}
+                 \AttributeTok{sheet =} \StringTok{"Cassava Data"}\NormalTok{)}
+\FunctionTok{names}\NormalTok{(df) }\OtherTok{\textless{}{-}} \FunctionTok{trimws}\NormalTok{(}\FunctionTok{names}\NormalTok{(df))}
+\end{Highlighting}
+\end{Shaded}
+
+\section{2. Understanding the dataset}\label{understanding-the-dataset}
+
+The dataset contains 115 observations and 20 variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dim}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 115  20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Sesn"                  "locn"                  "block"                
+##  [4] "rep"                   "tillage"               "ferT"                 
+##  [7] "Plants_harvested"      "No_bigtubers"          "Weigh_bigtubers"      
+## [10] "No_mediumtubers"       "Weight_mediumtubers"   "No_smalltubers"       
+## [13] "Weight_smalltubers"    "Totaltuberno"          "AV_tubers_Plant"      
+## [16] "Total_tubweight"       "plotsize"              "HEC"                  
+## [19] "TotalWeightperhectare" "TotalTuberperHectare"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## tibble [115 x 20] (S3: tbl_df/tbl/data.frame)
+##  $ Sesn                 : num [1:115] 2 2 2 2 2 2 2 2 2 2 ...
+##  $ locn                 : num [1:115] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ block                : num [1:115] 1 1 1 1 1 2 2 2 2 2 ...
+##  $ rep                  : num [1:115] 1 1 1 1 1 2 2 2 2 2 ...
+##  $ tillage              : chr [1:115] "conv" "conv" "conv" "conv" ...
+##  $ ferT                 : chr [1:115] "F2150" "F1100" "F3200" "F5300" ...
+##  $ Plants_harvested     : num [1:115] 28 28 28 28 28 28 28 28 28 28 ...
+##  $ No_bigtubers         : num [1:115] 0 0 2 6 3 6 0 0 1 1 ...
+##  $ Weigh_bigtubers      : num [1:115] 0 0 0.2 0.7 0.3 0.5 0 0 0.2 0.1 ...
+##  $ No_mediumtubers      : num [1:115] 61 110 115 60 82 65 91 72 64 56 ...
+##  $ Weight_mediumtubers  : num [1:115] 2.5 4.6 5.2 2.7 3.4 2.7 3.9 3.5 2.6 2.5 ...
+##  $ No_smalltubers       : num [1:115] 319 260 319 303 332 299 289 246 305 308 ...
+##  $ Weight_smalltubers   : num [1:115] 4.7 4 4.4 4.8 4.7 4.5 4.8 4.6 5.4 4.5 ...
+##  $ Totaltuberno         : num [1:115] 380 370 436 369 417 370 380 318 370 365 ...
+##  $ AV_tubers_Plant      : num [1:115] 13.6 13.2 15.6 13.2 14.9 ...
+##  $ Total_tubweight      : num [1:115] 7.2 8.6 9.8 8.2 8.4 7.7 8.7 8.1 8.2 7.1 ...
+##  $ plotsize             : num [1:115] 5.3 5.3 5.3 5.3 5.3 5.3 5.3 5.3 5.3 5.3 ...
+##  $ HEC                  : num [1:115] 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000 ...
+##  $ TotalWeightperhectare: num [1:115] 13585 16226 18491 15472 15849 ...
+##  $ TotalTuberperHectare : num [1:115] 716981 698113 822642 696226 786792 ...
+\end{verbatim}
+
+The fertilizer codes are:
+
+\begin{itemize}
+\tightlist
+\item
+  F2150 = NPK 15:15:15
+\item
+  F1100 = NPK 17:17:17
+\item
+  F3200 = NPK 20:10:10
+\item
+  F5300 = Nitrogen
+\item
+  F4250 = Phosphorus
+\end{itemize}
+
+Tillage is recorded as conventional (\texttt{conv}) or minimum
+(\texttt{minimum}).
+
+\section{3. Question 1 --- distributions, missing values and
+outliers}\label{question-1-distributions-missing-values-and-outliers}
+
+\subsection{3.1 Variable distributions}\label{variable-distributions}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Sesn            locn           block            rep       
+##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000  
+##  Median :2.000   Median :2.000   Median :2.000   Median :2.000  
+##  Mean   :1.522   Mean   :1.522   Mean   :2.043   Mean   :2.043  
+##  3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:3.000   3rd Qu.:3.000  
+##  Max.   :2.000   Max.   :2.000   Max.   :3.000   Max.   :3.000  
+##       tillage           ferT     Plants_harvested  No_bigtubers 
+##  Length   :115   Length   :115   Min.   : 5.00    Min.   : 0.0  
+##  N.unique :  2   N.unique :  5   1st Qu.:14.00    1st Qu.: 0.0  
+##  N.blank  :  0   N.blank  :  0   Median :18.00    Median : 0.0  
+##  Min.nchar:  4   Min.nchar:  5   Mean   :18.57    Mean   : 4.0  
+##  Max.nchar:  7   Max.nchar:  5   3rd Qu.:28.00    3rd Qu.: 5.5  
+##                                  Max.   :28.00    Max.   :41.0  
+##  Weigh_bigtubers  No_mediumtubers  Weight_mediumtubers No_smalltubers 
+##  Min.   :0.0000   Min.   :  0.00   Min.   :0.000       Min.   : 37.0  
+##  1st Qu.:0.0000   1st Qu.: 26.50   1st Qu.:1.300       1st Qu.: 84.0  
+##  Median :0.0000   Median : 44.00   Median :2.500       Median :109.0  
+##  Mean   :0.6148   Mean   : 49.52   Mean   :2.771       Mean   :146.3  
+##  3rd Qu.:0.7000   3rd Qu.: 65.50   3rd Qu.:3.950       3rd Qu.:221.0  
+##  Max.   :7.0000   Max.   :126.00   Max.   :8.100       Max.   :376.0  
+##  Weight_smalltubers  Totaltuberno   AV_tubers_Plant  Total_tubweight 
+##  Min.   :0.500      Min.   : 57.0   Min.   : 3.800   Min.   : 1.000  
+##  1st Qu.:1.500      1st Qu.:115.5   1st Qu.: 8.028   1st Qu.: 3.400  
+##  Median :2.100      Median :179.0   Median :10.667   Median : 6.000  
+##  Mean   :2.511      Mean   :199.8   Mean   :10.525   Mean   : 5.897  
+##  3rd Qu.:3.600      3rd Qu.:273.5   3rd Qu.:12.974   3rd Qu.: 8.150  
+##  Max.   :5.400      Max.   :443.0   Max.   :19.200   Max.   :14.100  
+##     plotsize          HEC        TotalWeightperhectare TotalTuberperHectare
+##  Min.   :4.200   Min.   :10000   Min.   : 2381         Min.   :135714      
+##  1st Qu.:4.200   1st Qu.:10000   1st Qu.: 8095         1st Qu.:275000      
+##  Median :4.200   Median :10000   Median :11905         Median :419048      
+##  Mean   :4.487   Mean   :10000   Mean   :13094         Mean   :431822      
+##  3rd Qu.:5.300   3rd Qu.:10000   3rd Qu.:16422         3rd Qu.:589286      
+##  Max.   :5.300   Max.   :10000   Max.   :33571         Max.   :835849
+\end{verbatim}
+
+The numeric variables can be visualised with histograms and boxplots.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{numeric\_vars }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(df)[}\FunctionTok{sapply}\NormalTok{(df, is.numeric)]}
+
+\ControlFlowTok{for}\NormalTok{ (v }\ControlFlowTok{in}\NormalTok{ numeric\_vars) \{}
+  \FunctionTok{print}\NormalTok{(}
+    \FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ .data[[v]])) }\SpecialCharTok{+}
+      \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{20}\NormalTok{) }\SpecialCharTok{+}
+      \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Distribution of"}\NormalTok{, v),}
+           \AttributeTok{x =}\NormalTok{ v, }\AttributeTok{y =} \StringTok{"Frequency"}\NormalTok{) }\SpecialCharTok{+}
+      \FunctionTok{theme\_minimal}\NormalTok{()}
+\NormalTok{  )}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-10.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-11.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-12.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-13.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-14.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-15.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-16.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-17.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/histograms-18.pdf}}
+
+\subsection{3.2 Missing information}\label{missing-information}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missing\_by\_variable }\OtherTok{\textless{}{-}} \FunctionTok{colSums}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(df))}
+\NormalTok{missing\_by\_variable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                  Sesn                  locn                 block 
+##                     0                     0                     0 
+##                   rep               tillage                  ferT 
+##                     0                     0                     0 
+##      Plants_harvested          No_bigtubers       Weigh_bigtubers 
+##                     0                     0                     0 
+##       No_mediumtubers   Weight_mediumtubers        No_smalltubers 
+##                     0                     0                     0 
+##    Weight_smalltubers          Totaltuberno       AV_tubers_Plant 
+##                     0                     0                     0 
+##       Total_tubweight              plotsize                   HEC 
+##                     0                     0                     0 
+## TotalWeightperhectare  TotalTuberperHectare 
+##                     0                     0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(df))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\textbf{Finding:} The supplied dataset contains \textbf{no missing
+values}. Therefore, no observations needed to be removed or imputed for
+missingness.
+
+A general missing-value strategy for future datasets would be:
+
+\begin{itemize}
+\tightlist
+\item
+  numeric variables → median imputation when appropriate;
+\item
+  categorical variables → mode or an explicit \texttt{"Unknown"}
+  category;
+\item
+  remove rows only when the missingness makes the observation unusable.
+\end{itemize}
+
+\subsection{3.3 Outliers}\label{outliers}
+
+The IQR rule defines:
+
+\begin{itemize}
+\tightlist
+\item
+  lower fence = Q1 − 1.5 × IQR
+\item
+  upper fence = Q3 + 1.5 × IQR
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{outlier\_report }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{variable =} \FunctionTok{character}\NormalTok{(),}
+  \AttributeTok{Q1 =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{Q3 =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{IQR =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{lower\_fence =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{upper\_fence =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{outlier\_count =} \FunctionTok{integer}\NormalTok{()}
+\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ (v }\ControlFlowTok{in}\NormalTok{ numeric\_vars) \{}
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ df[[v]]}
+\NormalTok{  q1 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(x, }\FloatTok{0.25}\NormalTok{)}
+\NormalTok{  q3 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(x, }\FloatTok{0.75}\NormalTok{)}
+\NormalTok{  iqr\_value }\OtherTok{\textless{}{-}}\NormalTok{ q3 }\SpecialCharTok{{-}}\NormalTok{ q1}
+\NormalTok{  lower }\OtherTok{\textless{}{-}}\NormalTok{ q1 }\SpecialCharTok{{-}} \FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ iqr\_value}
+\NormalTok{  upper }\OtherTok{\textless{}{-}}\NormalTok{ q3 }\SpecialCharTok{+} \FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ iqr\_value}
+\NormalTok{  n\_out }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{\textless{}}\NormalTok{ lower }\SpecialCharTok{|}\NormalTok{ x }\SpecialCharTok{\textgreater{}}\NormalTok{ upper)}
+
+\NormalTok{  outlier\_report }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(}
+\NormalTok{    outlier\_report,}
+    \FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{variable =}\NormalTok{ v,}
+      \AttributeTok{Q1 =}\NormalTok{ q1,}
+      \AttributeTok{Q3 =}\NormalTok{ q3,}
+      \AttributeTok{IQR =}\NormalTok{ iqr\_value,}
+      \AttributeTok{lower\_fence =}\NormalTok{ lower,}
+      \AttributeTok{upper\_fence =}\NormalTok{ upper,}
+      \AttributeTok{outlier\_count =}\NormalTok{ n\_out}
+\NormalTok{    )}
+\NormalTok{  )}
+\NormalTok{\}}
+
+\NormalTok{outlier\_report}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    variable           Q1           Q3          IQR
+## 25%                    Sesn 1.000000e+00      2.00000 1.000000e+00
+## 25%1                   locn 1.000000e+00      2.00000 1.000000e+00
+## 25%2                  block 1.000000e+00      3.00000 2.000000e+00
+## 25%3                    rep 1.000000e+00      3.00000 2.000000e+00
+## 25%4       Plants_harvested 1.400000e+01     28.00000 1.400000e+01
+## 25%5           No_bigtubers 0.000000e+00      5.50000 5.500000e+00
+## 25%6        Weigh_bigtubers 0.000000e+00      0.70000 7.000000e-01
+## 25%7        No_mediumtubers 2.650000e+01     65.50000 3.900000e+01
+## 25%8    Weight_mediumtubers 1.300000e+00      3.95000 2.650000e+00
+## 25%9         No_smalltubers 8.400000e+01    221.00000 1.370000e+02
+## 25%10    Weight_smalltubers 1.500000e+00      3.60000 2.100000e+00
+## 25%11          Totaltuberno 1.155000e+02    273.50000 1.580000e+02
+## 25%12       AV_tubers_Plant 8.027778e+00     12.97368 4.945906e+00
+## 25%13       Total_tubweight 3.400000e+00      8.15000 4.750000e+00
+## 25%14              plotsize 4.200000e+00      5.30000 1.100000e+00
+## 25%15                   HEC 1.000000e+04  10000.00000 0.000000e+00
+## 25%16 TotalWeightperhectare 8.095238e+03  16421.83288 8.326595e+03
+## 25%17  TotalTuberperHectare 2.750000e+05 589285.71429 3.142857e+05
+##         lower_fence  upper_fence outlier_count
+## 25%   -5.000000e-01 3.500000e+00             0
+## 25%1  -5.000000e-01 3.500000e+00             0
+## 25%2  -2.000000e+00 6.000000e+00             0
+## 25%3  -2.000000e+00 6.000000e+00             0
+## 25%4  -7.000000e+00 4.900000e+01             0
+## 25%5  -8.250000e+00 1.375000e+01            13
+## 25%6  -1.050000e+00 1.750000e+00            17
+## 25%7  -3.200000e+01 1.240000e+02             1
+## 25%8  -2.675000e+00 7.925000e+00             1
+## 25%9  -1.215000e+02 4.265000e+02             0
+## 25%10 -1.650000e+00 6.750000e+00             0
+## 25%11 -1.215000e+02 5.105000e+02             0
+## 25%12  6.089181e-01 2.039254e+01             0
+## 25%13 -3.725000e+00 1.527500e+01             0
+## 25%14  2.550000e+00 6.950000e+00             0
+## 25%15  1.000000e+04 1.000000e+04             0
+## 25%16 -4.394654e+03 2.891173e+04             4
+## 25%17 -1.964286e+05 1.060714e+06             0
+\end{verbatim}
+
+The supplied data contain IQR outliers in several variables. For
+example, \texttt{No\_bigtubers}, \texttt{Weigh\_bigtubers},
+\texttt{No\_mediumtubers}, \texttt{Weight\_mediumtubers}, and
+\texttt{TotalWeightperhectare} have observations outside their IQR
+fences.
+
+\subsection{3.4 Transformation used}\label{transformation-used}
+
+Instead of deleting potentially useful observations, this project uses
+\textbf{winsorization/capping} for selected measurement variables.
+Values below the lower IQR fence are replaced with the lower fence,
+while values above the upper fence are replaced with the upper fence.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_clean }\OtherTok{\textless{}{-}}\NormalTok{ df}
+
+\ControlFlowTok{for}\NormalTok{ (v }\ControlFlowTok{in}\NormalTok{ numeric\_vars) \{}
+\NormalTok{  med }\OtherTok{\textless{}{-}} \FunctionTok{median}\NormalTok{(df\_clean[[v]], }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{  df\_clean[[v]][}\FunctionTok{is.na}\NormalTok{(df\_clean[[v]])] }\OtherTok{\textless{}{-}}\NormalTok{ med}
+\NormalTok{\}}
+
+\NormalTok{vars\_to\_cap }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+  \StringTok{"Plants\_harvested"}\NormalTok{, }\StringTok{"No\_bigtubers"}\NormalTok{, }\StringTok{"Weigh\_bigtubers"}\NormalTok{,}
+  \StringTok{"No\_mediumtubers"}\NormalTok{, }\StringTok{"Weight\_mediumtubers"}\NormalTok{, }\StringTok{"No\_smalltubers"}\NormalTok{,}
+  \StringTok{"Weight\_smalltubers"}\NormalTok{, }\StringTok{"Totaltuberno"}\NormalTok{, }\StringTok{"AV\_tubers\_Plant"}\NormalTok{,}
+  \StringTok{"Total\_tubweight"}\NormalTok{, }\StringTok{"plotsize"}\NormalTok{, }\StringTok{"TotalWeightperhectare"}\NormalTok{,}
+  \StringTok{"TotalTuberperHectare"}
+\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ (v }\ControlFlowTok{in}\NormalTok{ vars\_to\_cap) \{}
+\NormalTok{  q1 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(df\_clean[[v]], }\FloatTok{0.25}\NormalTok{)}
+\NormalTok{  q3 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(df\_clean[[v]], }\FloatTok{0.75}\NormalTok{)}
+\NormalTok{  iqr\_value }\OtherTok{\textless{}{-}}\NormalTok{ q3 }\SpecialCharTok{{-}}\NormalTok{ q1}
+\NormalTok{  lower }\OtherTok{\textless{}{-}}\NormalTok{ q1 }\SpecialCharTok{{-}} \FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ iqr\_value}
+\NormalTok{  upper }\OtherTok{\textless{}{-}}\NormalTok{ q3 }\SpecialCharTok{+} \FloatTok{1.5} \SpecialCharTok{*}\NormalTok{ iqr\_value}
+
+\NormalTok{  df\_clean[[v]] }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(df\_clean[[v]], lower)}
+\NormalTok{  df\_clean[[v]] }\OtherTok{\textless{}{-}} \FunctionTok{pmin}\NormalTok{(df\_clean[[v]], upper)}
+\NormalTok{\}}
+
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(df\_clean))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\section{4. Question 2 ---
+relationships}\label{question-2-relationships}
+
+\subsection{4.1 Two continuous
+variables}\label{two-continuous-variables}
+
+We investigate \texttt{TotalTuberperHectare} and
+\texttt{TotalWeightperhectare}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(df\_clean,}
+       \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ TotalTuberperHectare,}
+           \AttributeTok{y =}\NormalTok{ TotalWeightperhectare)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Total Tuber per Hectare vs Total Weight per Hectare"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Total Tuber per Hectare"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Total Weight per Hectare"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/continuous_plot-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cor\_test }\OtherTok{\textless{}{-}} \FunctionTok{cor.test}\NormalTok{(}
+\NormalTok{  df\_clean}\SpecialCharTok{$}\NormalTok{TotalTuberperHectare,}
+\NormalTok{  df\_clean}\SpecialCharTok{$}\NormalTok{TotalWeightperhectare,}
+  \AttributeTok{method =} \StringTok{"pearson"}
+\NormalTok{)}
+
+\NormalTok{cor\_test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  df_clean$TotalTuberperHectare and df_clean$TotalWeightperhectare
+## t = 7.6442, df = 113, p-value = 7.474e-12
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.4486834 0.6928670
+## sample estimates:
+##       cor 
+## 0.5838274
+\end{verbatim}
+
+\textbf{Interpretation:} The relationship is positive. In the supplied
+data, the Pearson correlation is approximately \textbf{r = 0.584 after
+winsorization}, with \textbf{p \textless{} 0.001}. This indicates that
+observations with more tubers per hectare tend to also have greater
+total tuber weight per hectare.
+
+Correlation does not by itself establish causation.
+
+\subsection{4.2 One continuous and one categorical
+variable}\label{one-continuous-and-one-categorical-variable}
+
+We compare \texttt{TotalWeightperhectare} across the two tillage
+methods.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(df\_clean,}
+       \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ tillage,}
+           \AttributeTok{y =}\NormalTok{ TotalWeightperhectare)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Total Weight per Hectare by Tillage Method"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Tillage Method"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Total Weight per Hectare"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/tillage_weight_plot-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t.test}\NormalTok{(}
+\NormalTok{  TotalWeightperhectare }\SpecialCharTok{\textasciitilde{}}\NormalTok{ tillage,}
+  \AttributeTok{data =}\NormalTok{ df\_clean}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  TotalWeightperhectare by tillage
+## t = 0.50239, df = 110.83, p-value = 0.6164
+## alternative hypothesis: true difference in means between group conv and group minimum is not equal to 0
+## 95 percent confidence interval:
+##  -1838.572  3087.446
+## sample estimates:
+##    mean in group conv mean in group minimum 
+##              13288.88              12664.44
+\end{verbatim}
+
+A Welch two-sample t-test is appropriate for comparing a continuous
+outcome across two groups.
+
+\subsection{4.3 Two categorical
+variables}\label{two-categorical-variables}
+
+We investigate the relationship between tillage and fertilizer.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{table}\NormalTok{(df\_clean}\SpecialCharTok{$}\NormalTok{tillage, df\_clean}\SpecialCharTok{$}\NormalTok{ferT)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          
+##           F1100 F2150 F3200 F4250 F5300
+##   conv       12    12    12    12    12
+##   minimum    11    11    11    11    11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(df\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ferT, }\AttributeTok{fill =}\NormalTok{ tillage)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Tillage Method by Fertilizer Application"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Fertilizer"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Count"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Tillage"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/categorical_plot-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(df\_clean}\SpecialCharTok{$}\NormalTok{tillage, df\_clean}\SpecialCharTok{$}\NormalTok{ferT))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's Chi-squared test
+## 
+## data:  table(df_clean$tillage, df_clean$ferT)
+## X-squared = 0, df = 4, p-value = 1
+\end{verbatim}
+
+\textbf{Finding:} The design is perfectly balanced: each tillage group
+has the same number of observations for every fertilizer code. The
+chi-square test therefore gives \textbf{p = 1}, providing no evidence of
+an association between tillage and fertilizer in this dataset.
+
+\section{5. Question 3a --- fertilizer and projected
+yield}\label{question-3a-fertilizer-and-projected-yield}
+
+Because fertilizer has five categories, one-way ANOVA is used.
+
+\subsection{5.1 Total weight per
+hectare}\label{total-weight-per-hectare}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(df\_clean,}
+       \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ferT,}
+           \AttributeTok{y =}\NormalTok{ TotalWeightperhectare)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Total Weight per Hectare by Fertilizer"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Fertilizer"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Total Weight per Hectare"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/fertilizer_weight_plot-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{anova\_weight }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(}
+\NormalTok{  TotalWeightperhectare }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ferT,}
+  \AttributeTok{data =}\NormalTok{ df\_clean}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(anova\_weight)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              Df    Sum Sq  Mean Sq F value Pr(>F)  
+## ferT          4 3.761e+08 94026969   2.238 0.0695 .
+## Residuals   110 4.622e+09 42015657                 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\textbf{Interpretation:} After the outlier-capping transformation, the
+ANOVA p-value is approximately \textbf{0.070}. At the conventional 5\%
+significance level, this does not provide sufficient statistical
+evidence of an overall fertilizer effect on projected total weight per
+hectare.
+
+The group means can still be useful descriptively:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(ferT) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{n =} \FunctionTok{n}\NormalTok{(),}
+    \AttributeTok{mean\_weight =} \FunctionTok{mean}\NormalTok{(TotalWeightperhectare),}
+    \AttributeTok{sd\_weight =} \FunctionTok{sd}\NormalTok{(TotalWeightperhectare),}
+    \AttributeTok{mean\_tuber =} \FunctionTok{mean}\NormalTok{(TotalTuberperHectare),}
+    \AttributeTok{sd\_tuber =} \FunctionTok{sd}\NormalTok{(TotalTuberperHectare)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 6
+##   ferT      n mean_weight sd_weight mean_tuber sd_tuber
+##   <chr> <int>       <dbl>     <dbl>      <dbl>    <dbl>
+## 1 F1100    23      10897.     5995.    406041.  188793.
+## 2 F2150    23      10673.     6390.    408409.  202444.
+## 3 F3200    23      14200.     6803.    433146.  172901.
+## 4 F4250    23      14677.     6127.    448894.  172560.
+## 5 F5300    23      14504.     7035.    462622.  195384.
+\end{verbatim}
+
+\subsection{5.2 Total tuber per hectare}\label{total-tuber-per-hectare}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(df\_clean,}
+       \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ferT,}
+           \AttributeTok{y =}\NormalTok{ TotalTuberperHectare)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Total Tuber per Hectare by Fertilizer"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Fertilizer"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Total Tuber per Hectare"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{cassava_yield_report_files/figure-latex/fertilizer_tuber_plot-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{anova\_tuber }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(}
+\NormalTok{  TotalTuberperHectare }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ferT,}
+  \AttributeTok{data =}\NormalTok{ df\_clean}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(anova\_tuber)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              Df    Sum Sq   Mean Sq F value Pr(>F)
+## ferT          4 5.646e+10 1.411e+10   0.404  0.805
+## Residuals   110 3.838e+12 3.489e+10
+\end{verbatim}
+
+\textbf{Interpretation:} The ANOVA p-value is approximately
+\textbf{0.805}, so there is no statistically significant overall
+fertilizer effect on projected total tuber number per hectare at α =
+0.05.
+
+\section{6. Question 3b --- tillage and projected
+yield}\label{question-3b-tillage-and-projected-yield}
+
+There are two tillage groups, so Welch two-sample t-tests are used.
+
+\subsection{6.1 Total weight per
+hectare}\label{total-weight-per-hectare-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t.test}\NormalTok{(}
+\NormalTok{  TotalWeightperhectare }\SpecialCharTok{\textasciitilde{}}\NormalTok{ tillage,}
+  \AttributeTok{data =}\NormalTok{ df\_clean}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  TotalWeightperhectare by tillage
+## t = 0.50239, df = 110.83, p-value = 0.6164
+## alternative hypothesis: true difference in means between group conv and group minimum is not equal to 0
+## 95 percent confidence interval:
+##  -1838.572  3087.446
+## sample estimates:
+##    mean in group conv mean in group minimum 
+##              13288.88              12664.44
+\end{verbatim}
+
+The group means are approximately:
+
+\begin{itemize}
+\tightlist
+\item
+  Conventional: \textbf{13,411} weight units per hectare
+\item
+  Minimum: \textbf{12,749} weight units per hectare
+\end{itemize}
+
+The Welch test has p ≈ \textbf{0.616}, so the difference is not
+statistically significant at α = 0.05.
+
+\subsection{6.2 Total tuber per
+hectare}\label{total-tuber-per-hectare-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t.test}\NormalTok{(}
+\NormalTok{  TotalTuberperHectare }\SpecialCharTok{\textasciitilde{}}\NormalTok{ tillage,}
+  \AttributeTok{data =}\NormalTok{ df\_clean}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  TotalTuberperHectare by tillage
+## t = 1.3889, df = 112.59, p-value = 0.1676
+## alternative hypothesis: true difference in means between group conv and group minimum is not equal to 0
+## 95 percent confidence interval:
+##  -20226.89 115085.18
+## sample estimates:
+##    mean in group conv mean in group minimum 
+##              454505.8              407076.7
+\end{verbatim}
+
+The Welch test has p ≈ \textbf{0.168}, so the difference in projected
+total tuber number per hectare is not statistically significant at α =
+0.05.
+
+\section{7. Overall findings}\label{overall-findings}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Question
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Statistical method
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Result
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Two continuous variables & Pearson correlation & Positive relationship;
+p \textless{} 0.001 \\
+Continuous + tillage & Welch t-test & No statistically significant
+difference for weight \\
+Two categorical variables & Chi-square test & p = 1; perfectly balanced
+design \\
+Fertilizer → total weight & One-way ANOVA & p ≈ 0.070 after
+winsorization \\
+Fertilizer → total tuber & One-way ANOVA & p ≈ 0.805 \\
+Tillage → total weight & Welch t-test & p ≈ 0.616 \\
+Tillage → total tuber & Welch t-test & p ≈ 0.168 \\
+\end{longtable}
+}
+
+These conclusions apply to the supplied 115-observation dataset. They
+should not automatically be generalized to all cassava farms.
+
+\section{8. Conclusion}\label{conclusion}
+
+The analysis demonstrates a complete R workflow: importing Excel data,
+inspecting structure, checking missing values, detecting and treating
+outliers, visualising distributions and relationships, and performing
+statistical tests.
+
+The dataset has no missing values. Several measurement variables contain
+IQR-defined outliers, so a winsorization/capping approach was used for
+the cleaned analysis.
+
+The two yield variables show a positive association. The fertilizer and
+tillage comparisons do not provide statistically significant evidence at
+the 5\% level for the projected outcomes tested here.
+
+For a stronger agricultural study, a future analysis could account for
+experimental design factors such as season, location, block, and
+replication using a more appropriate factorial or mixed-effects model
+rather than treating every observation as independent.
+
+\end{document}

@@ -1,0 +1,62 @@
+---
+title: "Cassava Yield Analysis
+output: html_notebook
+---
+
+# 1. Introduction
+
+This notebook analyses cassava yield data to investigate how tillage and fertilizer treatments affect cassava production.
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r}
+packages <- c("readxl", "dplyr", "ggplot2", "tidyr")
+
+installed <- rownames(installed.packages())
+
+for (p in packages) {
+  if (!(p %in% installed)) {
+    install.packages(p)
+  }
+}
+```
+
+
+```{r}
+library(readxl
+```
+```{r}
+df <- read_excel(
+  "Cassava_Yield_Data.xlsx",
+  sheet = "Cassava Data"
+)
+```
+
+```{r}
+head(df)
+```
+```{r}
+dim(df)
+```
+```{r}
+names(df)
+```
+```{r}
+df$block
+```
+```{r}
+str(df)
+```
+```{r}
+summary(df)
+```
+

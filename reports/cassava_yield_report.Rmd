@@ -1,20 +1,85 @@
 ---
 title: "Cassava Yield Data Analysis"
-author: "Conrad Natuyamba"
+author: "GROUP 2"
 date: "`r format(Sys.Date(), '%d %B %Y')`"
 output:
+  word_document:
+    toc: true
   html_document:
     toc: true
     toc_float: true
     number_sections: true
+  pdf_document:
+    toc: true
 ---
 
 # 1. Introduction
 
 This report analyses the supplied Cassava Yield Data using R. The objectives are to explore the dataset, identify missing values and outliers, investigate relationships between variables, and test whether fertilizer and tillage are associated with projected cassava yield.
 
+```{r}
+knitr::opts_chunk$set(root.dir = "C:/Users/HP/OneDrive/Desktop/cassava-yield-r-project_1/data/raw")
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+### Libraries used in this analysis
+
+**1. readxl**
+
+The `readxl` library is used to import data from Excel files
+(`.xlsx` and `.xls`) into R.
+
+We are using it to read the Cassava Yield Data Excel workbook
+so that we can explore and analyze the dataset.
+
+**2. dplyr**
+
+The `dplyr` library is used for data manipulation and cleaning.
+It provides functions for selecting columns, filtering rows,
+creating new variables, and transforming data.
+
+We are using it to clean the cassava dataset, convert variable types,
+and prepare the data for analysis.
+
+**3. tidyr**
+
+The `tidyr` library is used to organize and reshape data into
+a tidy format, where each variable has its own column and each
+observation has its own row.
+
+We are using it to reshape numeric and categorical variables
+into a suitable format for creating distribution graphs.
+
+**4. ggplot2**
+
+The `ggplot2` library is used to create statistical graphs
+and visualizations.
+
+We are using it to display variable distributions, boxplots,
+scatterplots, and bar charts. These visualizations help us
+identify patterns, relationships, and potential outliers in the data.
+
+**6. knitr**
+
+The `knitr` library is used to generate well-formatted reports
+from R Markdown documents.
+
+We are using it to display tables, including variable summaries,
+missing-value information, and outlier detection results,
+in the knitted HTML report.
+
+### Summary
+
+Together, these libraries support the complete data analysis process:
+importing the dataset, cleaning and transforming the data,
+exploring distributions, visualizing relationships, and presenting
+statistical findings in an organized HTML report.
+
+
+
 ```{r setup, message=FALSE, warning=FALSE}
-packages <- c("readxl", "dplyr", "ggplot2", "tidyr")
+packages <- c("readxl", "dplyr", "ggplot2", "tidyr", "knitr")
 installed <- rownames(installed.packages())
 
 for (p in packages) {
@@ -25,6 +90,7 @@ library(readxl)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(knitr)
 
 df <- read_excel("../data/raw/Cassava_Yield_Data.xlsx",
                  sheet = "Cassava Data")
@@ -32,6 +98,10 @@ names(df) <- trimws(names(df))
 ```
 
 # 2. Understanding the dataset
+```{r}
+head(df)
+```
+
 
 The dataset contains `r nrow(df)` observations and `r ncol(df)` variables.
 
