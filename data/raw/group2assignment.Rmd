@@ -1,0 +1,383 @@
+---
+title: "BSDS-2 (Practical 2: Data Transformation)"
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# Fixes the working directory for BOTH the Knit button and interactive
+# "Run Current Chunk" execution, so file paths like "Cassava_Yield_Data.xlsx"
+# always resolve correctly no matter where the R console's own getwd() is.
+knitr::opts_knit$set(root.dir = "F:/UCU/2026/Advent semester/BIG DATA ANALYTICS (R) & TECHNOLOGIES/Week 2 FUNDAMENTALS OF BIG DATA/R Practicals")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Overview
+
+This practical picks up after pre-processing and focuses on **data transformation**:
+fixing column types, renaming/adding variables, splitting a dataset into its
+categorical and continuous parts, and generating descriptive statistics for each. 
+
+In this session, we'll be using the "Cassava_Yield_Data".
+
+## 0. Install and load required libraries
+
+```{r install-packages}
+required_packages <- c("readxl", "dplyr", "ggplot2")
+missing_packages <- setdiff(required_packages, rownames(installed.packages()))
+if (length(missing_packages) > 0) {
+  install.packages(missing_packages)
+}
+```
+
+```{r load-libraries}
+library(readxl)  # reads Excel .xlsx/.xls files into R as data frames
+library(dplyr)   # grammar for manipulating data frames (filter, mutate, group_by, summarise ...)
+library(ggplot2) # grammar-of-graphics plotting package, used here for histograms/boxplots
+```
+
+## A. Import the Excel dataset
+
+```{r import-data}
+# Import the dataset and store it as a data frame called "cassava"
+cassava <- read_excel("Cassava_Yield_Data.xlsx")
+
+# View the data frame
+cassava
+```
+
+**Output insight:** each row is one plot from a cassava tillage/fertiliser field
+trial, recording tuber counts and weights by size class (big/medium/small), plus
+per-hectare yield figures. There are 20 columns mixing trial-design identifiers
+(`Sesn`, `locn`, `block`, `rep`), two treatment factors (`tillage`, `ferT`), and
+measured/derived numeric outcomes.
+
+## B. Explore the dataset
+
+```{r shape}
+# Structure of dataset (number of rows and columns)
+dim(cassava)
+```
+
+**Output insight:** the dataframe has 115 samples (plots) and 20 variables.
+
+```{r info}
+# Information about the dataset: column names, types, first values
+str(cassava)
+```
+
+```{r dtypes}
+# Column data types
+sapply(cassava, class)
+```
+
+**Output insight:** notice that `Sesn` ("season") and `locn` ("location") were read in
+as numeric, even though they are really trial-design **categories** (season 1 vs 2,
+location 1 vs 2) rather than quantities you would ever average or add. This is a very
+common data-import trap and is exactly what the transformation step below corrects.
+
+### i) Check for duplicated rows
+
+```{r duplicated-count}
+sum(duplicated(cassava))
+```
+
+```{r drop-duplicates}
+# In case there is duplicated data, remove it and compare shape before/after
+cassava_deduped <- distinct(cassava)
+cat("Structure of dataframe after deleting duplicates:",
+    nrow(cassava_deduped), "rows,", ncol(cassava_deduped), "columns\n")
+```
+
+**Output insight:** 0 duplicated rows were found, and the shape is unchanged (115
+rows) after de-duplication.
+
+### ii) Check for missing data
+
+```{r missing-data}
+# Number of missing values per column
+colSums(is.na(cassava))
+```
+
+**Output insight:** every column reports 0 missing values — this dataset arrived
+clean, so no imputation is required here (unlike Practical 1).
+
+## C. Data distribution
+
+Note: many statistical models assume the outcome variable is roughly normally
+distributed. Ways to check this include:
+
+1. Visual inspection — bar plots for categorical data, histograms/boxplots for
+   continuous data, and Q-Q plots (expected normal quantiles vs. actual quantiles).
+2. Formal statistics — the Shapiro-Wilk test for small-to-medium samples (3–5000
+   rows), or the Kolmogorov-Smirnov test for larger samples (>5000 rows).
+
+### i) Transform variables
+
+```{r fix-types}
+# Convert the mis-identified variables "Sesn" and "locn" to categorical (factor)
+cassava <- cassava %>%
+  mutate(
+    Sesn = as.factor(Sesn),
+    locn = as.factor(locn)
+  )
+
+# Check data types again
+sapply(cassava, class)
+```
+
+**Output insight:** `Sesn` and `locn` are now `factor` columns rather than numeric —
+R will treat them as categories (e.g. in summaries, plots and models) instead of
+quantities that can be meaningfully averaged.
+
+```{r columns}
+colnames(cassava)
+```
+
+```{r categorise-columns}
+# Alternatively, identify variables by their data type / number of unique values
+categorical_columns <- c()
+continuous_columns <- c()
+
+for (column in colnames(cassava)) {
+  if (is.character(cassava[[column]]) || is.factor(cassava[[column]]) ||
+      length(unique(cassava[[column]])) <= 7) {
+    categorical_columns <- c(categorical_columns, column)
+  } else {
+    continuous_columns <- c(continuous_columns, column)
+  }
+}
+
+cat("Categorical columns:\n")
+print(categorical_columns)
+cat("\nContinuous columns:\n")
+print(continuous_columns)
+```
+
+**Output insight:** the same "few unique values = categorical" heuristic used in the
+original notebook picks out `Sesn`, `locn`, `block`, `rep`, `tillage` and `ferT` as
+categorical (each only takes a handful of distinct values), leaving the tuber-count
+and weight measurements as continuous.
+
+```{r rename-column}
+# Rename variables if needed - e.g. if a column name has a trailing space
+# (kept here even though this dataset's names are already clean, to show the pattern)
+cassava <- cassava %>%
+  rename_with(~ trimws(.x))
+
+colnames(cassava)
+```
+
+```{r add-column}
+# Add a derived variable if needed, e.g. total tuber weight expressed in kilograms
+# instead of the original unit (illustrates mutate() as R's equivalent of pandas' assign())
+cassava <- cassava %>%
+  mutate(Total_tubweight_kg = Total_tubweight * 10)
+
+cassava %>% select(Total_tubweight, Total_tubweight_kg) %>% head()
+```
+
+**Output insight:** `mutate()` is the R/dplyr equivalent of pandas' `assign()`. The
+new `Total_tubweight_kg` column is simply `Total_tubweight * 10`, confirming the
+transformation was applied correctly to every row.
+
+## D. Subset the numeric and categorical variables
+
+```{r subset-categorical}
+# Subset the categorical variables
+cassava_cat <- cassava %>% select(Sesn, locn, rep, tillage, ferT)
+cassava_cat
+```
+
+```{r subset-continuous}
+# Subset the continuous/numeric variables
+cassava_cont <- cassava %>%
+  select(block, Plants_harvested, No_bigtubers, Weigh_bigtubers,
+         No_mediumtubers, Weight_mediumtubers, No_smalltubers, Weight_smalltubers,
+         Totaltuberno, AV_tubers_Plant, Total_tubweight, plotsize, HEC,
+         TotalWeightperhectare, TotalTuberperHectare)
+cassava_cont
+```
+
+## E. Descriptive statistics of variables
+
+```{r describe-continuous}
+summary(cassava_cont)
+```
+
+**Output insight:** several yield variables look implausible for a "normal"
+distribution — `No_bigtubers` and `Weigh_bigtubers` both have a median of 0 (over half
+the plots produced no large tubers at all), and the same is true for
+`No_mediumtubers`'s lower quartile. A skew this strong toward zero means these
+columns are **not** good candidates for mean-based imputation or for models that
+assume normality without transformation (e.g. a log or square-root transform).
+
+```{r describe-categorical}
+# Descriptive statistics of the categorical variables
+summary(cassava_cat)
+```
+
+**Output insight:** `Sesn` and `locn` each take exactly 2 values (2 seasons, 2
+locations) with an even 60/55 split; `tillage` has a single value (`conv`) recorded
+throughout this extract; and `ferT` (fertiliser treatment) has 5 levels, with
+`F2150` the most frequent at 23 plots.
+
+## Key takeaways
+
+* `Sesn` and `locn` were stored as numbers but are really categorical trial factors —
+  always check `str()`/column types before analysing a dataset, not just its `head()`.
+* `No_bigtubers`, `Weigh_bigtubers`, and `No_mediumtubers` are heavily zero-inflated
+  and skewed, so any downstream analysis or modelling of these columns should account
+  for that (e.g. a transformation, or a distribution more appropriate than Gaussian).
+* The dataset has no duplicates and no missing values, so this practical's cleaning
+  effort could focus entirely on **types and structure** rather than gaps in the data.
+  
+## Take home assignment
+
+You have been provided with an excel book on Cassava Yield Data.
+
+### QUESTION 1
+Explore the dataset showing the distribution of all the variables (“Sesn” to "TotalTuberperHectare"). Further explore the variables for missing information and outliers. Go ahead and transform the dataset to handle missing information and outliers. (5 MARKS)
+
+########
+```{r}
+# Histograms for continuous variables
+cassava_cont %>%
+  gather(variable, value) %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  facet_wrap(~variable, scales = "free") +
+  labs(title = "Distribution of Continuous Variables")
+
+# Bar plots for categorical variables
+cassava_cat %>%
+  gather(variable, value) %>%
+  ggplot(aes(x = value)) +
+  geom_bar(fill = "lightgreen") +
+  facet_wrap(~variable, scales = "free") +
+  labs(title = "Distribution of Categorical Variables")
+
+```
+This gives a quick visual overview of  skewness, zero-inflation, and balance across categories
+
+b) Missing information
+using the same method as above
+```{r}
+colSums(is.na(cassava))
+
+```
+c) Outliers
+```{r}
+# Boxplots for continuous variables
+cassava_cont %>%
+  gather(variable, value) %>%
+  ggplot(aes(x = variable, y = value)) +
+  geom_boxplot(fill = "orange") +
+  coord_flip() +
+  labs(title = "Outlier Detection in Continuous Variables")
+
+```
+from the figure above,we will likely see extreme values in tuber counts/weights (plots with unusually high yields).
+Handling: either winsorize (cap extremes), transform (log/sqrt), or keep them if they represent real biological variation.
+
+
+
+### QUESTION 2
+Investigate the relationships between the following variables using displays (graphs) and statistical tests;
+
+a. Two continuous variables
+
+Example: Total_tubweight vs TotalWeightperhectare
+
+```{r}
+ggplot(cassava, aes(x = Total_tubweight, y = TotalWeightperhectare)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Relationship between Total Tubweight and Yield per Hectare")
+
+cor.test(cassava$Total_tubweight, cassava$TotalWeightperhectare)
+
+```
+Scatterplot + correlation test shows strength and direction of association.
+
+
+b. One continuous variable and one categorical variable
+
+Example: Fertiliser (ferT) vs TotalWeightperhectare
+```{r}
+ggplot(cassava, aes(x = ferT, y = TotalWeightperhectare)) +
+  geom_boxplot(fill = "purple") +
+  labs(title = "Effect of Fertiliser on Yield per Hectare")
+
+anova_result <- aov(TotalWeightperhectare ~ ferT, data = cassava)
+summary(anova_result)
+
+```
+ Boxplots + ANOVA test show whether fertiliser treatments differ significantly.
+
+
+c. Two categorical variables
+
+Example: Sesn vs locn
+```{r}
+table(cassava$Sesn, cassava$locn)
+
+chisq.test(table(cassava$Sesn, cassava$locn))
+
+```
+Cross-tabulation + Chi-square test shows whether season and location are independent.
+
+### QUESTION 3
+
+Cassava farmers in Soroti would like to know the following aspects to help inform their farming practices;
+
+a. Does fertilizer application affect the projected “TotalWeightperhectare” and the "TotalTuberperHectare" 
+
+```{r}
+anova_fert_weight <- aov(TotalWeightperhectare ~ ferT, data = cassava)
+anova_fert_tuber <- aov(TotalTuberperHectare ~ ferT, data = cassava)
+
+summary(anova_fert_weight)
+summary(anova_fert_tuber)
+
+```
+If p < 0.05, fertiliser significantly affects yield. Farmers can identify which fertiliser level maximizes production.
+
+
+
+b. Does the tillage method (“conv” and “minimum”) affect the projected “TotalWeightperhectare” and "TotalTuberperHectare"
+
+```{r}
+anova_tillage_weight <- aov(TotalWeightperhectare ~ tillage, data = cassava)
+anova_tillage_tuber <- aov(TotalTuberperHectare ~ tillage, data = cassava)
+
+summary(anova_tillage_weight)
+summary(anova_tillage_tuber)
+
+```
+ If p < 0.05, tillage method (conventional vs minimum) significantly influences yield. Farmers can decide whether reduced tillage is viable.
+
+##########################################################
+ANSWERS:
+
+
+
+# Conclusion
+
+The Cassava Yield Dataset was explored through descriptive statistics and graphical analysis.
+
+The investigation included:
+
+- Variable distributions.
+- Missing value assessment.
+- Outlier detection and treatment.
+- Relationships between continuous and categorical variables.
+- The effects of fertilizer application on yield.
+- The effects of tillage methods on yield.
+
+The findings provide evidence that can support cassava farming decisions in Soroti.
